@@ -1,7 +1,11 @@
+from typing import Tuple
 import numpy as np
 from losses import Loss
+from model import Model
 
-class LinearRegression:
+from tqdm import tqdm
+
+class LinearRegression(Model):
     """
     Basic Linear Regression Implementation
     """
@@ -15,6 +19,8 @@ class LinearRegression:
         """
         Initializing Linear Regression Params.
         """
+        super().__init__()
+        
         self.vectorized = (learning_rate is None) and (epochs is None)
         self.learning_rate = learning_rate
         self.epochs = epochs
@@ -28,7 +34,12 @@ class LinearRegression:
         self.weights = np.random.randn(*shape) * np.sqrt(2.0 / (shape[0] + shape[1]))
         self.bias = 0  # zero init
 
-    def _sgd(self, x: np.ndarray, intermediates: np.ndarray):
+    def _backward(self, x:np.ndarray, intermediates: Tuple) -> Tuple[np.ndarray, np.float64]:
+        w_intermediate, db = intermediates
+        dw = np.dot(x.T, w_intermediate)
+        return (dw, db)
+
+    def _optimize(self, x: np.ndarray, intermediates: Tuple[np.ndarray, np.float64]=None):
         """
         Performing Stochastic Gradient Descent
         x*w+b = y
@@ -41,10 +52,8 @@ class LinearRegression:
             -> -(2/n_samples)*(n_features, 1)
                 --> same shape with weight vector
         """
-
-        w_intermediate, db = intermediates
-
-        dw = np.dot(x.T, w_intermediate)
+        dw, db = self._backward(x, intermediates)
+        
         self.weights -= self.learning_rate * dw
         self.bias -= self.learning_rate * db
 
@@ -68,23 +77,24 @@ class LinearRegression:
         if self.vectorized:
             #TODO: Implement closed form solution
             return
+        with tqdm(total=self.epochs, desc="Training Progress...") as pbar:
+            for epoch in range(self.epochs):
+                # Predictions
+                y_pred = self.transform(x)
 
-        for epoch in range(self.epochs):
-            # Predictions
-            y_pred = self.transform(x)
+                # calculate loss
+                loss = self.loss(y, y_pred)
+                
+                # loss backward
+                intermediates = self.loss.backward(y, y_pred)
+                
+                # perform sgd with intermediate params
+                self._optimize(x, intermediates)
 
-            # calculate loss
-            loss = self.loss(y, y_pred)
-            
-            # loss backward
-            intermediates = self.loss.backward(y, y_pred)
-            
-            # perform sgd with intermediate params
-            self._sgd(x, intermediates)
-
-            # Print every 100 epoch
-            if epoch % 100 == 0:
-                print(f"Epoch {epoch}: Loss = {loss}")
+                pbar.set_description(f"Epoch {epoch + 1}, Loss {loss:.4f}")
+                
+                # Update the progress bar
+                pbar.update(1)
 
     def transform(self, x: np.ndarray) -> np.ndarray:
         """Make predictions"""
