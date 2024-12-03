@@ -1,11 +1,11 @@
 from typing import Tuple
 import numpy as np
 from losses import Loss
-from model import Model
+from model import LinearModel
 
 from tqdm import tqdm
 
-class LinearRegression(Model):
+class LinearRegression(LinearModel):
     """
     Basic Linear Regression Implementation
     """

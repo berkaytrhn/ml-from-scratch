@@ -1,21 +1,21 @@
 from tqdm import tqdm
 
 
-from model import Model
-from losses import BCELoss
-from activations import Sigmoid
+from model import LinearModel
+from losses import Loss
+from activations import Activation
 import numpy as np
 
 
-class LogisticRegression(Model):
+class LogisticRegression(LinearModel):
     """
     Basic Logistic Regression Class Based Implementation
     """
 
     def __init__(
         self,
-        loss: BCELoss,
-        activation: Sigmoid,
+        loss: Loss,
+        activation: Activation,
         learning_rate:float,
         epochs:int=None
     ) -> None:
