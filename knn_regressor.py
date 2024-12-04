@@ -1,12 +1,10 @@
-from typing import Any
-import numpy as np 
+import numpy as np
 from model import BaseModel
+from tqdm import tqdm
 
-
-
-class KNNClassifier(BaseModel):
+class KNNRegressor(BaseModel):
     """
-    Basic KNN Implementation for classification tasks 
+    Basic KNN Implementation for regression tasks 
     """
     
     def __init__(self, k, distance) -> None:
@@ -23,8 +21,10 @@ class KNNClassifier(BaseModel):
     
     def transform(self, data: np.ndarray) -> np.ndarray:
         # TODO: Can be replaced with broadcasting and np.newaxis method
-        nearest_neighbours = np.array([self._nearest_neighbour(sample) for sample in data])
-        return nearest_neighbours.reshape(-1, 1)
+        nearest_neighbours=list()
+        for sample in tqdm(data):
+            nearest_neighbours.append(self._nearest_neighbour(sample))
+        return np.array(nearest_neighbours).reshape(-1, 1)
 
     def _nearest_neighbour(self, sample: np.ndarray):
         distances = np.array([self.distance(data_point, sample) for data_point in self.x_train])
@@ -35,10 +35,8 @@ class KNNClassifier(BaseModel):
         
         # majority voting using bincount
         """
-        bincount receives 1d array so flattened and 
-        since index of element corresponds to the element which
-        we are counting, argmax returns the majority vote result
+        unlike the classifier, we do not perform majority vote;
+        we perform simple mean among k neighbour values
         """
-        majority_vote = np.bincount(nearest_preds.flatten()).argmax()
-        return majority_vote
-    
+        majority_voted_value = np.mean(nearest_preds)
+        return majority_voted_value
