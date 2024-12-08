@@ -2,6 +2,7 @@ from typing import Tuple
 import numpy as np
 from losses import Loss
 from model import LinearModel
+from regularizations import Regularization
 
 from tqdm import tqdm
 
@@ -13,6 +14,7 @@ class LinearRegression(LinearModel):
     def __init__(
         self,
         loss: Loss,
+        regularization: Regularization = None,
         learning_rate: float = None,
         epochs: int = None,
     ) -> None:
@@ -25,6 +27,7 @@ class LinearRegression(LinearModel):
         self.learning_rate = learning_rate
         self.epochs = epochs
         self.loss = loss
+        self.regularization=regularization
         self.weights = None
         self.bias = None
 
@@ -34,12 +37,23 @@ class LinearRegression(LinearModel):
         self.weights = np.random.randn(*shape) * np.sqrt(2.0 / (shape[0] + shape[1]))
         self.bias = 0  # zero init
 
-    def _backward(self, x:np.ndarray, intermediates: Tuple) -> Tuple[np.ndarray, np.float64]:
-        w_intermediate, db = intermediates
+    def _backward(
+        self, 
+        x:np.ndarray, 
+        intermediates: Tuple[np.ndarray, np.float64, np.ndarray]
+    ) -> Tuple[np.ndarray, np.float64]:
+        # unpack provided gradients
+        w_intermediate, db, dreg = intermediates
         dw = np.dot(x.T, w_intermediate)
+        
+        # update weights gradients with derivative of regularization term provided(might be zero if not)
+        dw += dreg
         return (dw, db)
 
-    def _optimize(self, x: np.ndarray, intermediates: Tuple[np.ndarray, np.float64]=None):
+    def _optimize(
+        self, 
+        x: np.ndarray, 
+        intermediates: Tuple[np.ndarray, np.float64]=None) -> None:
         """
         Performing Stochastic Gradient Descent
         x*w+b = y
@@ -82,16 +96,24 @@ class LinearRegression(LinearModel):
                 # Predictions
                 y_pred = self.transform(x)
 
+                # calculate regularization term if provided one
+                regularize = (self.regularization is not None)
+                regularization_term = self.regularization.forward(self.weights) if regularize else 0
                 # calculate loss
-                loss = self.loss(y, y_pred)
+                loss = self.loss(y, y_pred) + regularization_term
                 
+                # calculate regularization term derivative if provided one
+                reg_grads = self.regularization.backward(self.weights) if regularize else 0
                 # loss backward
                 intermediates = self.loss.backward(y, y_pred)
+                
+                # add regulzarization grads to intermediate values tuple to optimize weights
+                intermediates = (*intermediates, reg_grads)
                 
                 # perform sgd with intermediate params
                 self._optimize(x, intermediates)
 
-                pbar.set_description(f"Epoch {epoch + 1}, Loss {loss:.4f}")
+                pbar.set_description(f"Epoch {epoch + 1}, Loss {loss:.7f}")
                 
                 # Update the progress bar
                 pbar.update(1)

@@ -2,6 +2,7 @@
 from sklearn.datasets import fetch_california_housing
 from sklearn.datasets import load_breast_cancer
 import numpy as np
+from sklearn.model_selection import train_test_split
 
 from linear_regression import LinearRegression
 from logistic_regression import LogisticRegression
@@ -11,7 +12,7 @@ from activations import Sigmoid
 from knn_regressor import KNNRegressor
 from knn_classifier import KNNClassifier
 from distances import euclidean_distance
-
+from regularizations import L1Regularization, L2Regularization
 
 
 def test_linear_regression():
@@ -20,20 +21,30 @@ def test_linear_regression():
 
     X = california_housing["data"]
     y = california_housing["target"]
-
-    # standarization for overcome overflow
-    scaler = StandardScaler()
-    scaler.fit(X)
-    
     y = y.reshape(y.shape[0], 1)
     print(X.shape, y.shape)
     
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
+    print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
+    # standarization for overcome overflow
+    scaler = StandardScaler()
     
-    X = scaler.transform(X)
+    X_train = scaler.fit_transform(X_train)
+    X_test = scaler.transform(X_test)
     
-    lr = LinearRegression(MSELoss(), 0.01, 10000)
+    
+    
+    l2 = L2Regularization(_lambda=1e-4)
+    
+    loss = MSELoss()
+    lr = LinearRegression(loss, l2, 0.0001, 10000)
 
-    lr.fit(X, y)
+    lr.fit(X_train, y_train)
+    
+    preds = lr.transform(X_test)
+    test_loss = loss(y_test, preds)
+    print(f"Test Loss: '{test_loss}'")
+    
 
 def test_logistic_regression():
     # Testing logictic regression model on ...
@@ -114,10 +125,12 @@ def test_knn_regressor():
 
 def main():
     """Main"""
-    # test_linear_regression()
+    np.random.seed(42)
+    
+    test_linear_regression()
     # test_logistic_regression()
     # test_knn_classifier()
-    test_knn_regressor()
+    # test_knn_regressor()
 
 if __name__ == "__main__":
     main()
