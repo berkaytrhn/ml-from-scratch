@@ -1,17 +1,10 @@
 ## Regularization Test Results
 
+### For 10_000 Epochs, 0.0001 Learning Rate and lambda as 1e-4
 
-### Linear Regression without Reg., 10000 Epoch, 0.0001 lr
-    - Train Loss: 1.014**_2896_**
-    - Test Loss : 1.0448**_390_**
-
-### Linear Regression with L1 Reg., lambda 1e-4, 10000 Epoch, 0.0001 lr
-
-    - Train Loss: 1.014**_5463_**
-    - Test Loss : 1.0448**_370_**
-
-### Linear Regression with L2 Reg., lambda 1e-4, 10000 Epoch, 0.0001 lr
-
-    - Train Loss: 1.014**_3669_**
-    - Test Loss : 1.0448**_407_**
+| Regularization | Training Loss | Test Loss |
+|----------------|---------------|-----------|
+| Without Regularization | 1.014**2896** | 1.0448**390** |
+| With L1 Regularization | 1.014**5463** | 1.0448**370** |
+| With L2 Regularization | 1.014**3669** | 1.0448**407** |
 
