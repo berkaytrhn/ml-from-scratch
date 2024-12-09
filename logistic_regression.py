@@ -4,6 +4,7 @@ from tqdm import tqdm
 from model import LinearModel
 from losses import Loss
 from activations import Activation
+from regularizations import Regularization
 import numpy as np
 
 
@@ -16,6 +17,7 @@ class LogisticRegression(LinearModel):
         self,
         loss: Loss,
         activation: Activation,
+        regularization: Regularization,
         learning_rate:float,
         epochs:int=None
     ) -> None:
@@ -27,6 +29,7 @@ class LogisticRegression(LinearModel):
         self.activation=activation
         self.learning_rate=learning_rate
         self.epochs=epochs
+        self.regularization=regularization
         # Params
         self.weights = None
         self.bias = None
@@ -61,6 +64,8 @@ class LogisticRegression(LinearModel):
         dy_pred = intermediates[0]
         # dy'/dz shape -> (n_samples, 1)
         dz = intermediates[1]
+        # regularization intermediates
+        dreg = intermediates[2]
 
 
         # Since w.shape -> (n_features, 1), np.dot(x.T, <derivatives>) needed for result
@@ -75,6 +80,9 @@ class LogisticRegression(LinearModel):
         dw = factor * np.dot(x.T, prev_derivatives)
         # dz/db = 1
         db = factor * np.sum(prev_derivatives * 1)
+        
+        # update weights gradients with derivative of regularization term provided(might be zero if not)
+        dw += dreg
         
         # dw = self.__clip_gradients(dw)
         # db = self.__clip_gradients(db)
@@ -116,19 +124,23 @@ class LogisticRegression(LinearModel):
 
                 assert np.all(y_pred >= 0) and np.all(y_pred <= 1), "y_pred values are out of bounds!"
                 
-                # calculating the loss
-                loss = self.loss(y, y_pred)
                 
+                regularize = self.regularization is not None
+                regularization_term = self.regularization.forward(self.weights) if regularize else 0
+                # calculating the loss
+                loss = self.loss(y, y_pred) + regularization_term
+                
+                reg_grads = self.regularization.backward(self.weights) if regularize else 0
                 # loss backward
                 loss_intermediates: np.ndarray = self.loss.backward(y, y_pred)
                 # caches the activation value on __call__
                 activation_intermediate: np.float64 = self.activation.backward()
                 
                 # performing optimnization
-                self._optimize(x, (loss_intermediates, activation_intermediate))
+                self._optimize(x, (loss_intermediates, activation_intermediate, reg_grads))
                 
-                
-                pbar.set_description(f"Epoch {epoch + 1}, Loss {loss:.4f}")
+                train_acc = np.mean((y_pred>=0.5)==y)*100
+                pbar.set_description(f"Epoch {epoch + 1}, Train Acc: {train_acc:.4f}%, Loss {loss:.4f}")
                 
                 # Update the progress bar
                 pbar.update(1)
