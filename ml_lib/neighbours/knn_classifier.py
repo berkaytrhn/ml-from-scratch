@@ -1,6 +1,6 @@
 from typing import Any
 import numpy as np 
-from model import BaseModel
+from ml_lib.model import BaseModel
 
 
 

@@ -1,10 +1,10 @@
 from tqdm import tqdm
 
 
-from model import LinearModel
-from losses import Loss
-from activations import Activation
-from regularizations import Regularization
+from ml_lib.linear import LinearModel
+from ml_lib.metrics import Loss
+from ml_lib.utilities import Activation
+from ml_lib.utilities import Regularization
 import numpy as np
 
 

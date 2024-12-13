@@ -16,13 +16,3 @@ class BaseModel(ABC):
         pass
 
 
-class LinearModel(BaseModel):
-    @abstractmethod
-    def _initialize_params(self, n_features) -> None:
-        pass
-    @abstractmethod
-    def _backward(self, x:np.ndarray, intermediates: Any=None):
-        pass
-    @abstractmethod
-    def _optimize(self, x: np.ndarray, intermediates: Any=None) -> None:
-        pass

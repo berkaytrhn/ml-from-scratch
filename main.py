@@ -5,15 +5,14 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
-from linear_regression import LinearRegression
-from logistic_regression import LogisticRegression
-from losses import MSELoss, BCELoss
-from utils import StandardScaler
-from activations import Sigmoid
-from knn_regressor import KNNRegressor
-from knn_classifier import KNNClassifier
-from distances import euclidean_distance
-from regularizations import L1Regularization, L2Regularization
+from ml_lib.linear import LinearRegression
+from ml_lib.linear import LogisticRegression
+from ml_lib.metrics import MSELoss, BCELoss
+from ml_lib.preprocessing import StandardScaler
+from ml_lib.utilities import Sigmoid
+from ml_lib.neighbours import KNNRegressor, KNNClassifier
+from ml_lib.utilities import euclidean_distance
+from ml_lib.utilities import L1Regularization, L2Regularization
 
 
 

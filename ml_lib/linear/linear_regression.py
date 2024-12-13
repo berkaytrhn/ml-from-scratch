@@ -1,8 +1,8 @@
 from typing import Tuple
 import numpy as np
-from losses import Loss
-from model import LinearModel
-from regularizations import Regularization
+from ml_lib.metrics import Loss
+from ml_lib.linear import LinearModel
+from ml_lib.utilities import Regularization
 
 from tqdm import tqdm
 

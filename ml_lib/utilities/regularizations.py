@@ -1,5 +1,4 @@
 import numpy as np
-from typing import Any
 from abc import abstractmethod
 
 class Regularization:
