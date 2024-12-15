@@ -28,3 +28,56 @@ class Sigmoid(Activation):
 
     def backward(self):
         return self.output_cache * (1 - self.output_cache)
+
+
+class Softmax(Activation):
+    """
+    Basic Softmax Activation Implementation
+    """
+    def __init__(self):
+        self.cache=None
+    
+    def __call__(self, z):
+        # subtract from max to avoid exponential explosion to infinity, now exp result will be max 1
+        exps = np.exp(z - np.max(z, axis=1, keepdims=True)) 
+        
+        self.cache = exps / np.sum(exps, axis=1, keepdims=True)
+        # max along axis=1(check among columns, horizontal direction) and shape[0] same with inputs
+        return self.cache
+    
+    def backward(self):
+        """
+        Since softmax depends on number_of_class values,
+        we should calculate partial derivative wrt all individually in a loop
+        
+        d_out: Derivative of loss wrt softmax output -> (N,C) = (number_of_samples, number_of_classes)
+        """
+        
+        N, C = self.cache.shape
+        
+        # for a case like receiving next derivatives and calculate  
+        # d_logits = np.zeros_like(d_out)
+        
+        # for a case like calculating immediate derivatives and later connect them
+        jacobians = np.zeros((N, C, C))
+        
+        # Loop in all datapoints
+        for i in range(N):  
+            
+            # Get the softmax output for the i-th data point
+            # Shape from (1,C) to (C, 1)  with reshape (-1, 1)
+            softmax_output = self.cache[i].reshape(-1, 1)  
+            
+            # Computing the Jacobian matrix for softmax: "diag(softmax) - softmax * softmax^T"
+            # Shape (C, C)
+            jacobian = np.diagflat(softmax_output) - np.dot(softmax_output, softmax_output.T)  
+            
+            # Computing the gradient for the i-th data point for complete usage
+            # d_logits[i] = np.dot(jacobian, d_out[i])
+            
+            # Computing jacobian matrices for all samples for immediate calculation implementation
+            # Shape : (N, C, C)
+            jacobians[i] = jacobian
+        
+        return jacobians
+    

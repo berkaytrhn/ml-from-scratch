@@ -3,7 +3,7 @@ from tqdm import tqdm
 
 from ml_lib.linear import LinearModel
 from ml_lib.metrics import Loss
-from ml_lib.utilities import Activation
+from ml_lib.utilities import Activation, Sigmoid, Softmax
 from ml_lib.utilities import Regularization
 import numpy as np
 

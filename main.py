@@ -1,6 +1,7 @@
 
 from sklearn.datasets import fetch_california_housing
 from sklearn.datasets import load_breast_cancer
+from sklearn.datasets import load_iris
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
@@ -9,7 +10,7 @@ from ml_lib.linear import LinearRegression
 from ml_lib.linear import LogisticRegression
 from ml_lib.metrics import MSELoss, BCELoss
 from ml_lib.preprocessing import StandardScaler
-from ml_lib.utilities import Sigmoid
+from ml_lib.utilities import Sigmoid, Softmax
 from ml_lib.neighbours import KNNRegressor, KNNClassifier
 from ml_lib.utilities import euclidean_distance
 from ml_lib.utilities import L1Regularization, L2Regularization
@@ -51,10 +52,15 @@ def test_linear_regression():
 def test_logistic_regression():
     # Testing logictic regression model on ...
     
+    # iris_dataset = load_iris()
+    # X = iris_dataset["data"]
+    # y = iris_dataset["target"]
+    
     breast_cancer = load_breast_cancer()
-
     X = breast_cancer["data"]
     y = breast_cancer["target"]
+    
+    
     y = y.reshape(y.shape[0], 1)
     print(X.shape, y.shape)
     
