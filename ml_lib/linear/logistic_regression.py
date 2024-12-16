@@ -133,9 +133,16 @@ class LogisticRegression(LinearModel):
                 reg_grads = self.regularization.backward(self.weights) if regularize else 0
                 # loss backward
                 loss_intermediates: np.ndarray = self.loss.backward(y, y_pred)
-                # caches the activation value on __call__
-                activation_intermediate: np.float64 = self.activation.backward()
                 
+                # TODO: Fix bug for following backprop of softmax activation
+                # caches the activation value on __call__
+                activation_intermediate = None
+                if isinstance(self.activation, Softmax):  
+                    # returns (N, C, C) jacobian matrix
+                    activation_intermediate = self.activation.backward(loss_intermediates)
+                else:
+                    activation_intermediate = self.activation.backward()
+                    
                 # performing optimnization
                 self._optimize(x, (loss_intermediates, activation_intermediate, reg_grads))
                 

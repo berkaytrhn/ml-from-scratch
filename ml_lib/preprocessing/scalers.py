@@ -1,7 +1,8 @@
 import numpy as np
+from .preprocessor import Preprocessor
 
 
-class StandardScaler:
+class StandardScaler(Preprocessor):
     """
     -> Basic standarization utility class
     -> Support for two dim array for now

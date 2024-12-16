@@ -8,8 +8,8 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 
 from ml_lib.linear import LinearRegression
 from ml_lib.linear import LogisticRegression
-from ml_lib.metrics import MSELoss, BCELoss
-from ml_lib.preprocessing import StandardScaler
+from ml_lib.metrics import MSELoss, BCELoss, CrossEntropyLoss
+from ml_lib.preprocessing import StandardScaler, OneHotEncoder
 from ml_lib.utilities import Sigmoid, Softmax
 from ml_lib.neighbours import KNNRegressor, KNNClassifier
 from ml_lib.utilities import euclidean_distance
@@ -52,13 +52,13 @@ def test_linear_regression():
 def test_logistic_regression():
     # Testing logictic regression model on ...
     
-    # iris_dataset = load_iris()
-    # X = iris_dataset["data"]
-    # y = iris_dataset["target"]
+    iris_dataset = load_iris()
+    X = iris_dataset["data"]
+    y = iris_dataset["target"]
     
-    breast_cancer = load_breast_cancer()
-    X = breast_cancer["data"]
-    y = breast_cancer["target"]
+    # breast_cancer = load_breast_cancer()
+    # X = breast_cancer["data"]
+    # y = breast_cancer["target"]
     
     
     y = y.reshape(y.shape[0], 1)
@@ -68,12 +68,17 @@ def test_logistic_regression():
     print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
 
     
+    encoder = OneHotEncoder()
+    y_train = encoder.fit_transform(y_train)
+    y_test = encoder.fit_transform(y_test)
+    
+    
     scaler = StandardScaler()
     X_train = scaler.fit_transform(X_train)
     X_test = scaler.transform(X_test)
     
-    loss = BCELoss()
-    activation = Sigmoid()
+    loss = CrossEntropyLoss() # BCELoss()
+    activation = Softmax() # Sigmoid()
     l2 = L2Regularization(_lambda=1e-4)
     
     

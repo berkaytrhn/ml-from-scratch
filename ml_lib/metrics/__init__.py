@@ -1,1 +1,1 @@
-from .losses import Loss, MSELoss, BCELoss
+from .losses import Loss, MSELoss, BCELoss, CrossEntropyLoss

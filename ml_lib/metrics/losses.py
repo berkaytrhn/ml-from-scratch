@@ -19,6 +19,9 @@ class Loss(ABC):
         y_pred:np.ndarray
     ) -> Tuple[np.float64, np.float64]:
         """Loss Backward Abstract Method"""
+    
+    def clipping_preds(self, data, epsilon=1e-15):
+        return np.clip(data, epsilon, 1 - epsilon)
 
 
 
@@ -63,9 +66,6 @@ class BCELoss(Loss):
     """
     Basic Implementation of Binary Cross Entropy Losss
     """
-    def __clipping_preds(self, data, epsilon=1e-15):
-        return np.clip(data, epsilon, 1 - epsilon)
-    
     def __call__(
         self,
         y_true:np.ndarray,
@@ -73,11 +73,7 @@ class BCELoss(Loss):
     ) -> np.float64:
         """BCE Loss Calculation """
         
-        y_pred = self.__clipping_preds(y_pred)
-        # print("neg_log_0 : ", neg_log_0.shape)
-        # print("neg_log_1 : ", neg_log_1.shape)
-        # print((neg_log_0+neg_log_1).shape)
-        # print(-np.mean(neg_log_0+neg_log_1))
+        y_pred = self.clipping_preds(y_pred)
         return -np.mean(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred))
 
     
@@ -89,8 +85,35 @@ class BCELoss(Loss):
     ) -> np.ndarray:
         """Loss Backward """
 
-        y_pred = self.__clipping_preds(y_pred)
+        y_pred = self.clipping_preds(y_pred)
 
         # Calculate derivative of "loss" wrt "y_pred"
         return (y_pred - y_true) / (y_pred * (1 - y_pred))
+
+
+class CrossEntropyLoss(Loss):
     
+    def  __call__(
+        self,
+        y_true:np.ndarray,
+        y_pred:np.ndarray
+    ) -> np.float64:
+        """
+        Cross Entropy Loss Calculation
+        y_true, y_pred: (N,C) matrices(assumed to be one hot encoded)
+        """
+        assert (y_true.ndim==2 and y_pred.ndim==2), "Ground truth values are expected as one hot encoded!!"
+        
+        loss = -np.sum(y_true * np.log(y_pred), axis=1)
+        return np.mean(loss)
+    
+    def backward(
+        self, 
+        y_true:np.ndarray, 
+        y_pred:np.ndarray
+    ) -> np.ndarray:
+        """
+        Derivative of Cross Entropy Loss
+        """
+        number_of_samples = y_true.shape[0]
+        return (y_pred - y_true) / number_of_samples

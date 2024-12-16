@@ -38,28 +38,28 @@ class Softmax(Activation):
         self.cache=None
     
     def __call__(self, z):
-        # subtract from max to avoid exponential explosion to infinity, now exp result will be max 1
         exps = np.exp(z - np.max(z, axis=1, keepdims=True)) 
         
         self.cache = exps / np.sum(exps, axis=1, keepdims=True)
-        # max along axis=1(check among columns, horizontal direction) and shape[0] same with inputs
+        
+        print("Softmax output shape:", self.cache.shape)
+        
         return self.cache
-    
-    def backward(self):
+        
+    def backward(self, d_out: np.ndarray):
         """
         Since softmax depends on number_of_class values,
         we should calculate partial derivative wrt all individually in a loop
         
         d_out: Derivative of loss wrt softmax output -> (N,C) = (number_of_samples, number_of_classes)
         """
-        
         N, C = self.cache.shape
         
         # for a case like receiving next derivatives and calculate  
-        # d_logits = np.zeros_like(d_out)
+        d_logits = np.zeros_like(d_out)
         
         # for a case like calculating immediate derivatives and later connect them
-        jacobians = np.zeros((N, C, C))
+        # jacobians = np.zeros((N, C, C))
         
         # Loop in all datapoints
         for i in range(N):  
@@ -73,11 +73,11 @@ class Softmax(Activation):
             jacobian = np.diagflat(softmax_output) - np.dot(softmax_output, softmax_output.T)  
             
             # Computing the gradient for the i-th data point for complete usage
-            # d_logits[i] = np.dot(jacobian, d_out[i])
+            d_logits[i] = np.dot(jacobian, d_out[i].reshape(1, -1))
             
             # Computing jacobian matrices for all samples for immediate calculation implementation
             # Shape : (N, C, C)
-            jacobians[i] = jacobian
+            # jacobians[i] = jacobian
         
-        return jacobians
+        return d_logits
     
