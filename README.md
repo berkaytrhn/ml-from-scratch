@@ -40,7 +40,7 @@
 
     - Setup with 0.1 lr, 1e-6 lambda L2 Regularization, Full-Batch GD and 10000 epochs, loss and acc becomes meaningful nearly at epoch>7k.
     - Loss decreases too slow with lr<0.1 makes model to learn nearly impossible which stucks at high loss and low acc with 10k epochs.
-    - Probably needs mini-batch gradient descent or better optimization algorithm than Full Batch GD
+    - Probably needs mini-batch gradient descent or better optimization algorithm than Vanilla GD
         - TODO: Implement SGD with Momentum on mini batches, if necessary other optimizers
 
 | Learning Rate | Train Loss |  Training Accuracy | Test Accuracy | Test Precision | Test Recall | Test F1 Score | Epochs |
