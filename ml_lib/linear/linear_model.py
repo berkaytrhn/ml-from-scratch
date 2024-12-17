@@ -5,7 +5,7 @@ from typing import Any
 
 class LinearModel(BaseModel):
     @abstractmethod
-    def _initialize_params(self, n_features) -> None:
+    def _initialize_params(self, n_features, n_classes) -> None:
         pass
     @abstractmethod
     def _backward(self, x:np.ndarray, intermediates: Any=None):

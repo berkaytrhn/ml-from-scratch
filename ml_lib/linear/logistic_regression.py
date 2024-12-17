@@ -11,6 +11,9 @@ import numpy as np
 class LogisticRegression(LinearModel):
     """
     Basic Logistic Regression Class Based Implementation
+    
+    TODO: A bit dependent to its' building blocks such as Sigmoid, Softmax or SGD, should be generalized well
+    TODO: 
     """
 
     def __init__(
@@ -35,18 +38,12 @@ class LogisticRegression(LinearModel):
         self.bias = None
 
 
-    def _initialize_params(self, n_features) -> None:
+    def _initialize_params(self, n_features, n_classes) -> None:
         """Xavier Initialization"""
-        shape = (n_features, 1)
+        shape = (n_features, n_classes) # prev was 1, generalized for multiclass clf
         self.weights = np.random.randn(*shape) * np.sqrt(2.0 / (shape[0] + shape[1]))
         self.bias = 0  # zero init
     
-    def __clip_gradients(self, gradients):
-        max_gradient_norm = 1.0
-        
-        clipped_gradients = [np.clip(g, -max_gradient_norm, max_gradient_norm) for g in gradients] if isinstance(gradients, np.ndarray) else np.clip(gradients, -max_gradient_norm, max_gradient_norm)
-        return np.array(clipped_gradients) if isinstance(gradients, np.ndarray) else clipped_gradients
-
     def _backward(self, x: np.ndarray, intermediates: np.ndarray = None):
         """
         * Stochastic Gradient Descent Implementation
@@ -115,7 +112,12 @@ class LogisticRegression(LinearModel):
         n_samples, n_features = x.shape
         
         # init params
-        self._initialize_params(n_features)
+        """
+        assumes y.shape as (batch_size, n_classes) one hot encoded 
+        TODO: For cross entropy loss and softmax together, assumption is y.shape is one hot encoded, 
+            should be generalized to be able to handle (batch_size, 1) shapes for multiclass clf
+        """
+        self._initialize_params(n_features, y.shape[1]) 
         
         with tqdm(total=self.epochs, desc="Training Progress...") as pbar:
             for epoch in range(self.epochs):
@@ -140,13 +142,25 @@ class LogisticRegression(LinearModel):
                 if isinstance(self.activation, Softmax):  
                     # returns (N, C, C) jacobian matrix
                     activation_intermediate = self.activation.backward(loss_intermediates)
+                    # performing optimnization
+                    loss_intermediates=1
+                
                 else:
                     activation_intermediate = self.activation.backward()
-                    
+                
                 # performing optimnization
                 self._optimize(x, (loss_intermediates, activation_intermediate, reg_grads))
                 
-                train_acc = np.mean((y_pred>=0.5)==y)*100
+                
+                if isinstance(self.activation, Softmax):
+                    y_true_labels = np.argmax(y, axis=1)
+                    # print(y[:4], y_true_labels[:4])
+                    y_pred_labels = np.argmax(y_pred, axis=1)
+                    # print(y_pred[:5], y_pred_labels[:5])
+                else:
+                    y_true_labels = y
+                    y_pred_labels = y_pred>=0.5
+                train_acc = np.mean(y_true_labels==y_pred_labels)*100
                 pbar.set_description(f"Epoch {epoch + 1}, Train Acc: {train_acc:.4f}%, Loss {loss:.4f}")
                 
                 # Update the progress bar
@@ -157,9 +171,13 @@ class LogisticRegression(LinearModel):
     
     def transform(self, x: np.ndarray) -> np.ndarray:
         z = np.dot(x, self.weights) + self.bias
+        
+        # print(x.shape, self.weights.shape)
         # print("z: ",z.shape)
+        # print(z[:5,:])
         a = self.activation(z)
         # print("a: ",a.shape)
+        # print(a[:5,:])
         
         return a
         

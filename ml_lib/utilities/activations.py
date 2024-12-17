@@ -42,7 +42,7 @@ class Softmax(Activation):
         
         self.cache = exps / np.sum(exps, axis=1, keepdims=True)
         
-        print("Softmax output shape:", self.cache.shape)
+        # print("Softmax output shape:", self.cache.shape)
         
         return self.cache
         
@@ -73,7 +73,7 @@ class Softmax(Activation):
             jacobian = np.diagflat(softmax_output) - np.dot(softmax_output, softmax_output.T)  
             
             # Computing the gradient for the i-th data point for complete usage
-            d_logits[i] = np.dot(jacobian, d_out[i].reshape(1, -1))
+            d_logits[i] = np.dot(jacobian, d_out[i])
             
             # Computing jacobian matrices for all samples for immediate calculation implementation
             # Shape : (N, C, C)

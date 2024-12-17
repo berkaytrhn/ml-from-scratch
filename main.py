@@ -72,21 +72,20 @@ def test_logistic_regression():
     y_train = encoder.fit_transform(y_train)
     y_test = encoder.fit_transform(y_test)
     
-    
     scaler = StandardScaler()
     X_train = scaler.fit_transform(X_train)
     X_test = scaler.transform(X_test)
     
-    loss = CrossEntropyLoss() # BCELoss()
-    activation = Softmax() # Sigmoid()
-    l2 = L2Regularization(_lambda=1e-4)
+    loss =  CrossEntropyLoss() # BCELoss()
+    activation = Softmax() # Sigmoid() 
+    l2 = L2Regularization(_lambda=1e-6)
     
     
     log_reg = LogisticRegression(
         loss=loss,
         activation=activation,
         regularization=l2,
-        learning_rate=0.001,
+        learning_rate=0.1,
         epochs=10000
     )
     
@@ -94,14 +93,20 @@ def test_logistic_regression():
     log_reg.fit(X_train, y_train)
     
     preds = log_reg.transform(X_test)
-    classification_threshold = 0.5
-    y_pred = (preds>=classification_threshold)
     
     # TODO: implement metrics.py -> acc, prec, recall and f1 for both binary and multiclass clf
-    test_acc = accuracy_score(y_test, y_pred)*100
-    precision = precision_score(y_test, y_pred)
-    recall = recall_score(y_test, y_pred)
-    f1 = f1_score(y_test, y_pred)
+    if isinstance(activation, Softmax):
+        y_true_labels = np.argmax(y_test, axis=1)
+        y_pred_labels = np.argmax(preds, axis=1)
+    else:
+        y_true_labels = y_test
+        y_pred_labels = (preds>=0.5)
+    
+    
+    test_acc = accuracy_score(y_true_labels, y_pred_labels)*100
+    precision = precision_score(y_true_labels, y_pred_labels, average="weighted")
+    recall = recall_score(y_true_labels, y_pred_labels, average="weighted")
+    f1 = f1_score(y_true_labels, y_pred_labels, average="weighted")
 
     print(f"Test Acc: '{test_acc:.4f}%', Precision: '{precision:.4f}', Recall: '{recall:.4f}', F1 Score: '{f1:.4f}'")
 

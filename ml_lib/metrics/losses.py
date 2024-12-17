@@ -73,7 +73,6 @@ class BCELoss(Loss):
     ) -> np.float64:
         """BCE Loss Calculation """
         
-        y_pred = self.clipping_preds(y_pred)
         return -np.mean(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred))
 
     
@@ -85,14 +84,16 @@ class BCELoss(Loss):
     ) -> np.ndarray:
         """Loss Backward """
 
-        y_pred = self.clipping_preds(y_pred)
 
         # Calculate derivative of "loss" wrt "y_pred"
         return (y_pred - y_true) / (y_pred * (1 - y_pred))
 
 
 class CrossEntropyLoss(Loss):
-    
+    """
+    TODO: Supports only one hot encoded generalize, 
+        support both single values and one hot encoded values
+    """
     def  __call__(
         self,
         y_true:np.ndarray,
@@ -104,7 +105,8 @@ class CrossEntropyLoss(Loss):
         """
         assert (y_true.ndim==2 and y_pred.ndim==2), "Ground truth values are expected as one hot encoded!!"
         
-        loss = -np.sum(y_true * np.log(y_pred), axis=1)
+        # added 1e-9 for for stability
+        loss = -np.sum(y_true * np.log(y_pred + 1e-9), axis=1) 
         return np.mean(loss)
     
     def backward(
@@ -115,5 +117,6 @@ class CrossEntropyLoss(Loss):
         """
         Derivative of Cross Entropy Loss
         """
+        
         number_of_samples = y_true.shape[0]
         return (y_pred - y_true) / number_of_samples

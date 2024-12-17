@@ -31,9 +31,9 @@ class LinearRegression(LinearModel):
         self.weights = None
         self.bias = None
 
-    def _initialize_params(self, n_features) -> None:
+    def _initialize_params(self, n_features, n_classes) -> None:
         """Xavier Initialization"""
-        shape = (n_features, 1)
+        shape = (n_features, n_classes)
         self.weights = np.random.randn(*shape) * np.sqrt(2.0 / (shape[0] + shape[1]))
         self.bias = 0  # zero init
 
@@ -86,7 +86,7 @@ class LinearRegression(LinearModel):
         ), "Number of train(x) samples and number of ground truth values(y) must be equal!"
 
         n_samples, n_features = x.shape
-        self._initialize_params(n_features)
+        self._initialize_params(n_features, len(np.unique(y))) # assumes y.shape as (batch_size, 1) TODO: generalize
 
         if self.vectorized:
             #TODO: Implement closed form solution
