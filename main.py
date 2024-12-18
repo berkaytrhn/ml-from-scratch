@@ -12,7 +12,7 @@ from ml_lib.metrics import MSELoss, BCELoss, CrossEntropyLoss
 from ml_lib.preprocessing import StandardScaler, OneHotEncoder
 from ml_lib.utilities import Sigmoid, Softmax
 from ml_lib.neighbours import KNNRegressor, KNNClassifier
-from ml_lib.utilities import euclidean_distance
+from ml_lib.utilities import euclidean_distance, manhattan_distance
 from ml_lib.utilities import L1Regularization, L2Regularization
 
 
@@ -123,7 +123,7 @@ def test_knn_classifier():
     scaler = StandardScaler()
     X = scaler.fit_transform(X)
     
-    clf = KNNClassifier(k=3, distance=euclidean_distance)
+    clf = KNNClassifier(k=3, distance=manhattan_distance)
     
     clf.fit(X, y)
     preds = clf.transform(X)
@@ -165,8 +165,8 @@ def main():
     np.random.seed(42)
     
     # test_linear_regression()
-    test_logistic_regression()
-    # test_knn_classifier()
+    # test_logistic_regression()
+    test_knn_classifier()
     # test_knn_regressor()
 
 if __name__ == "__main__":
