@@ -1,5 +1,7 @@
 # Regularization Tests
 
+## TODO: Recalculate with corrected mean std of scaler(after stddev typo fix from StandardScaler)
+
 ## Linear Regression
 
 | Hyperparameter | Value | 
@@ -47,3 +49,15 @@
 |----------------|---------------|---------------|-----------|-----------|-----------|-----------|-----------|
 | 0.01 | 1.3480 | 13.0% | 8.0% | 0.3000 | 0.0800 | 0.1263 | 10_000 | 
 | 0.1 | 0.8432 | 80.0% | 80.0% | 0.8769 | 0.8000 | 0.7738 | 10_000 |
+
+
+## KMeans Initial Implementation Results
+
+#### With k=5
+![](./results/make_blob_k5_2_dim_data.png)
+
+#### With k=12
+![](./results/make_blob_k12_2_dim_data.png)
+
+#### With k=5 but make_blob with 10 centers 
+![](./results/make_blob_k5_2_dim_data_real_10.png)

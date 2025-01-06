@@ -16,6 +16,10 @@ from ml_lib.utilities import euclidean_distance, manhattan_distance
 from ml_lib.utilities import L1Regularization, L2Regularization
 
 
+from ml_lib.cluster import KMeans
+from sklearn.datasets import make_blobs
+import matplotlib.pyplot as plt
+
 
 
 def test_linear_regression():
@@ -160,14 +164,46 @@ def test_knn_regressor():
     print(f"loss: {loss}")
 
 
+def test_kmeans_cluster():
+    km = KMeans(euclidean_distance, k=5)
+    X, y = make_blobs(n_samples=5000, centers=10, n_features=2)
+    scaler = StandardScaler()
+    X = scaler.fit_transform(X)
+    km.fit(X)
+    preds = km.transform(X)
+    draw_clusters(X, y, preds, 5)
+    
+    
+def draw_clusters(X, real, preds, k):
+    # assumes two dim data
+    plt.figure(figsize=(8, 6))
+    plt.scatter(X[:,0], X[:, 1], c=real, alpha=0.7)
+    plt.title(f"Real, k: {len(np.unique(real))}")
+    plt.xlabel("X-axis")
+    plt.ylabel("Y-axis")
+    
+    
+    plt.figure(figsize=(8, 6))
+    plt.scatter(X[:,0], X[:, 1], c=preds, alpha=0.7)
+    plt.title(f"Preds, k: {k}")
+    plt.xlabel("X-axis")
+    plt.ylabel("Y-axis")
+    
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+
 def main():
     """Main"""
     np.random.seed(42)
     
     # test_linear_regression()
     # test_logistic_regression()
-    test_knn_classifier()
+    # test_knn_classifier()
     # test_knn_regressor()
+    test_kmeans_cluster()
+    
+
 
 if __name__ == "__main__":
     main()

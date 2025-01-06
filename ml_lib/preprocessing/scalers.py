@@ -16,7 +16,7 @@ class StandardScaler(Preprocessor):
         """ Calculating mean and stddev """
         # TODO: generalize support for multidim
         self.means = np.mean(data, axis=0)
-        self.stddevs = np.mean(data, axis=0)
+        self.stddevs = np.std(data, axis=0)
     
     
     def transform(self, data:np.ndarray):
