@@ -61,3 +61,9 @@
 
 #### With k=5 but make_blob with 10 centers 
 ![](./results/make_blob_k5_2_dim_data_real_10.png)
+
+#### Sklearn Comparison With k=8 
+![](./results/make_blob_k8_2_dim_data_sklearn_comparison.png)
+
+#### Sklearn Comparison With k=5 but make_blob with 10 centers 
+![](./results/make_blob_k5_2_dim_data_real_10_sklearn_comparison.png)

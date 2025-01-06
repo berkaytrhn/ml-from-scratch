@@ -16,9 +16,10 @@ from ml_lib.utilities import euclidean_distance, manhattan_distance
 from ml_lib.utilities import L1Regularization, L2Regularization
 
 
-from ml_lib.cluster import KMeans
+from ml_lib.cluster import KMeans as KM
 from sklearn.datasets import make_blobs
 import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
 
 
 
@@ -165,16 +166,29 @@ def test_knn_regressor():
 
 
 def test_kmeans_cluster():
-    km = KMeans(euclidean_distance, k=5)
-    X, y = make_blobs(n_samples=5000, centers=10, n_features=2)
+    # Implementation
+    k=8
+    km = KM(euclidean_distance, k=k)
+    X, y = make_blobs(n_samples=5000, centers=8, n_features=2)
     scaler = StandardScaler()
     X = scaler.fit_transform(X)
     km.fit(X)
     preds = km.transform(X)
-    draw_clusters(X, y, preds, 5)
     
     
-def draw_clusters(X, real, preds, k):
+    # Sklearn
+    km_sk = KMeans(n_clusters=k, init='random', max_iter=300)
+    preds_sk = km_sk.fit_predict(X)
+    print(preds_sk)
+    
+    
+    draw_clusters(X, y, preds,preds_sk, k)
+    
+    
+    
+    
+    
+def draw_clusters(X, real, preds, preds_sklearn, k):
     # assumes two dim data
     plt.figure(figsize=(8, 6))
     plt.scatter(X[:,0], X[:, 1], c=real, alpha=0.7)
@@ -186,6 +200,12 @@ def draw_clusters(X, real, preds, k):
     plt.figure(figsize=(8, 6))
     plt.scatter(X[:,0], X[:, 1], c=preds, alpha=0.7)
     plt.title(f"Preds, k: {k}")
+    plt.xlabel("X-axis")
+    plt.ylabel("Y-axis")
+    
+    plt.figure(figsize=(8, 6))
+    plt.scatter(X[:,0], X[:, 1], c=preds_sklearn, alpha=0.7)
+    plt.title(f"Preds(Sklearn), k: {k}")
     plt.xlabel("X-axis")
     plt.ylabel("Y-axis")
     
