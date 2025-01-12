@@ -40,18 +40,20 @@ def test_linear_regression():
     X_train = scaler.fit_transform(X_train)
     X_test = scaler.transform(X_test)
     
-    
-    
     l2 = L2Regularization(_lambda=1e-4)
     
     loss = MSELoss()
-    lr = LinearRegression(loss, l2, 0.0001, 10000)
+    lr = LinearRegression(
+        loss=loss, 
+        regularization=l2,
+        learning_rate=0.0001, 
+        epochs=10000)
 
     lr.fit(X_train, y_train)
     
     preds = lr.transform(X_test)
     test_loss = loss(y_test, preds)
-    print(f"Test Loss: '{test_loss}'")
+    print(f"Test Loss: '{test_loss:.7f}'")
     
 
 def test_logistic_regression():
@@ -81,17 +83,17 @@ def test_logistic_regression():
     X_train = scaler.fit_transform(X_train)
     X_test = scaler.transform(X_test)
     
-    loss =  CrossEntropyLoss() # BCELoss()
-    activation = Softmax() # Sigmoid() 
-    l2 = L2Regularization(_lambda=1e-6)
+    loss =  BCELoss() # CrossEntropyLoss()
+    activation = Sigmoid() # Softmax()
+    l1 = L1Regularization(_lambda=1e-6)
     
     
     log_reg = LogisticRegression(
         loss=loss,
         activation=activation,
-        regularization=l2,
-        learning_rate=0.1,
-        epochs=10000
+        regularization=l1,
+        learning_rate=0.01,
+        epochs=10_000
     )
     
     

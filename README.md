@@ -13,9 +13,9 @@
 
 | Regularization | Training Loss | Test Loss |
 |----------------|---------------|-----------|
-| Without Regularization | 1.014**2896** | 1.0448**390** |
-| With L1 Regularization | 1.014**5463** | 1.0448**370** |
-| With L2 Regularization | 1.014**3669** | 1.0448**407** |
+| Without Regularization | 0.80**59157** | 0.8136**890** |
+| With L1 Regularization | 0.80**61037** | 0.8136**782** |
+| With L2 Regularization | 0.80**59584** | 0.8136**850** |
 
 <br>
 
@@ -25,18 +25,18 @@
 | Hyperparameter | Value | 
 |----------------|---------------|
 | Epochs | 10_000 | 
-| Learning Rate | 0.001 | 
-| Lambda | 1e-4 | 
+| Learning Rate | 0.01 | 
+| Lambda | 1e-6 | 
 
 
 
 | Regularization | Train Loss |  Training Accuracy | Test Accuracy | Test Precision | Test Recall | Test F1 Score | 
 |----------------|---------------|---------------|-----------|-----------|-----------|-----------|
-| Without Regularization | 0.1720 | 95.0131% | 93.6170% | 0.9360 | 0.9669 | 0.9512 |
-| With L1 Regularization | 0.1730 | 95.0131% | 93.6170% | 0.9360 | 0.9669 | 0.9512 |
-| With L2 Regularization | 0.1723 | 95.0131% | 93.6170% | 0.9360 | 0.9669 | 0.9512 |
+| Without Regularization | 0.2385 | 89.6667% | 72.0000% | 0.8074 | 0.7800 | 0.7735 |
+| With L1 Regularization | 0.2385 | 89.6667% | 72.0000% | 0.8074 | 0.7800 | 0.7735 |
+| With L2 Regularization | 0.2385 | 89.6667% | 72.0000% | 0.8074 | 0.7800 | 0.7735 |
 
-- Not meaningful change probably due to simplicity of the dataset
+- Compare Results With Scikit-Learn Implementation(Check if that also has not meaningful change with different setups)
 
 ### MultiClass Classification With Logistic Regression
 
